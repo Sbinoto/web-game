@@ -84,14 +84,21 @@ class enemy{
 
 class ammo{
 
-    constructor(){
+    constructor(origin, endPoint){
         this.node=document.createElement("div");
         this.node.setAttribute("class", "ammo");
         this.node.style.position="absolute";
         this.node.style.height="25px";
         this.node.style.width="25x";
         this.node.style.backgroundColor="orange";
+        this.node.style.left=origin.node.left;
+        this.node.style.top=origin.node.top;
+        this.distance= Math.hypot()
         canvas.appendChild(this.node)
+
+        this.move=()=>{
+
+        }
     }
 }
 
@@ -111,12 +118,13 @@ class game{
             for (let i=5;i>=0;i--){
                 const ammo= new ammo();
                 spawn("in", ammo.node);
-                this.ammo.push(ammo)
+                this.ammo.push(ammo);
             }
         };
 
         this.checkInputs=()=>{
-            document.addEventListener("keydown", )
+            document.addEventListener("keydown", this.player.move());
+            document.addEventListener("click", thi)
         }
 
     }
