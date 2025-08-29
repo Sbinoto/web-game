@@ -1,16 +1,25 @@
 const canvas=document.querySelector(".canvas");
-const screenSize=300;
-function spawn(inOrOut, node){
+
+const screenSize=800;
+
+function getPosition(node){
+    let x=node.style.left;
+    let y=node.style.top;
+    return [parseInt(x.slice(0,-2)), parseInt(y.slice(0, -2))];
+}
+
+function spawn(insetOutset, node){
+    const nodeSize=parseInt(node.getComputedStyle.getPropertyValue("height").slice(0,-2));
     let x;
     let y;
-    switch (inOrOut){
+    switch (insetOutset){
         case "in":
-            x=Math.floor(Math.random()*screenSize-node.style.height);
-            y=Math.floor(Math.random()*screenSize-node.style.height);
+            x=Math.floor(Math.random()*(screenSize-nodeSize));
+            y=Math.floor(Math.random()*(screenSize-nodeSize));
             break
         case "out":
             x=Math.floor(Math.random()*screenSize);
-            y=Math.floor(MMath.random()*screenSize);
+            y=Math.floor(Math.random()*screenSize);
             const leftRightTopBottom=Math.floor(Math.random()*4);
             switch (leftRightTopBottom){
                 case 3:
@@ -19,85 +28,77 @@ function spawn(inOrOut, node){
                     break
                 case 2:
                     x*=-1;
-                    y+=screenSize-node.width;
+                    y+=screenSize-nodeSize;
                     break
                 case 1:
+                    x+=screenSize-nodeSize;
                     y*=-1;
-                    x+=screenSize-node.width;
                     break
                 case 0:
-                    x+=screenSize-node.width;
-                    y+=screenSize-node.width;
+                    x+=screenSize-nodeSize;
+                    y+=screenSize-nodeSize;
                     break
-            }
+            };
             node.style.left=`${x}px`;
             node.style.top=`${y}px`;
-    }
-}
+
+    };
+};
 
 class player{
 
     constructor(){
         this.node=document.createElement("div");
-        this.node.setAttribute("class", "player");
-        this.node.style.position="absolute";
-        this.node.style.height="60px";
-        this.node.style.width="60px";
-        this.node.style.backgroundColor="white";
+        this.node.setAttribute("class", "player sprite");
         canvas.appendChild(this.node);
 
         this.move=(event)=>{
-            const x=parseInt(this.node.style.left);
-            const y=parseInt(this.node.style.top);
+            const position=getPosition(this.node);
             switch (event.key){
                 case "w":
-                    this.node.style.top=`${Math.max(screenSize, y-14)}px`;
+                    this.node.style.top=`${Math.max(screenSize, position[1]-14)}px`;
                     break
                 case "s":
-                    this.node.style.top=`${Math.min(screenSize, y+14)}px`;
+                    this.node.style.top=`${Math.min(screenSize, position[1]+14)}px`;
                     break
                 case "a":
-                    this.node.style.left=`${Math.max(screenSize, x-14)}px`;
+                    this.node.style.left=`${Math.max(screenSize, position[0]-14)}px`;
                     break
                 case "d":
-                    this.node.style.left=`${Math.min(screenSize, x+14)}px`;
+                    this.node.style.left=`${Math.min(screenSize, position[0]+14)}px`;
                     break
-
-            }
-        }
-        
-    }
-}
+            };
+        };
+    };
+};
 
 class enemy{
 
     constructor(){
         this.node=document.createElement("div");
-        this.node.setAttribute("class", "enemy");
-        this.node.style.position="absolute";
-        this.node.style.height="60px";
-        this.node.style.width="60px";
-        this.node.style.backgroundColor="black";
-        canvas.appendChild(this.node)
-    }
-}
+        this.node.setAttribute("class", "enemy sprite");
+        canvas.appendChild(this.node);
+    };
+};
 
 class ammo{
 
-    constructor(origin, endPoint){
+    constructor(){
         this.node=document.createElement("div");
-        this.node.setAttribute("class", "ammo");
-        this.node.style.position="absolute";
-        this.node.style.height="25px";
-        this.node.style.width="25x";
-        this.node.style.backgroundColor="orange";
-        this.node.style.left=origin.node.left;
-        this.node.style.top=origin.node.top;
-        this.distance= Math.hypot()
-        canvas.appendChild(this.node)
+        this.node.setAttribute("class", "ammo sprite");
+        canvas.appendChild(this.node);
+    };
+};
 
-        this.move=()=>{
+class bullet{
 
+    constructor(){
+        this.node=document.createElement("div");
+        this.node.setAttribute("class", "bullet sprite");
+        canvas.appendChild(this.node);
+
+        this.move=(originNode, endPoint)=>{
+            const position
         }
     }
 }
@@ -105,27 +106,27 @@ class ammo{
 class game{
 
     constructor(){
-        this.player=new player();
-        this.enemies=[];
-        this.ammo=[];
 
-        this.initialize=()=>{
+        this.init=()=>{
+            this.player= new player();
+            this.enemies=[];
+            this.ammo=[];
             for (let i=6;i>=0;i--){
-                const enemy= new enemy();
+                const enemy=new enemy();
                 spawn("out", enemy.node);
                 this.enemies.push(enemy);
             };
             for (let i=5;i>=0;i--){
-                const ammo= new ammo();
+                const ammo=new ammo();
                 spawn("in", ammo.node);
                 this.ammo.push(ammo);
-            }
+            };
         };
 
         this.checkInputs=()=>{
-            document.addEventListener("keydown", this.player.move());
-            document.addEventListener("click", thi)
+            document.addEventListener("keydown", this.player.move);
+            document.addEventListener("click", )
         }
 
-    }
-}
+    };
+};

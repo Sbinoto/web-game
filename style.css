@@ -1,12 +1,41 @@
 *{
     box-sizing: border-box;
-}
-body{
     margin: 0;
+    padding: 0;
 }
+
 .canvas{
-    position: relative;
-    width:800px;
-    height:800px;
-    background-color:grey;
+    position:relative;
+    width: 800px;
+    height: 800px;
+    background-color: dimgray;
+}
+
+.player, .enemy{
+    position: absolute;
+    height: 60px;
+    width: 60px;
+    background-color: white;
+}
+
+.sprite{
+    position: absolute;
+    height: 60px;
+    width: 60px;
+    &.player{
+    background-color: white;
+    }
+    &.enemy{
+    background-color: black;
+    }
+    &.ammo, &.bullet{
+        height: 15px;
+        width: 15px;
+        background-color: orange;
+    }
+    &.bullet{
+        background-color: darkgray;
+        border-radius: 50%;
+        box-shadow: 0px 0px 30px 3px white;
+    }
 }
