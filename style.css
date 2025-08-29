@@ -1,0 +1,12 @@
+*{
+    box-sizing: border-box;
+}
+body{
+    margin: 0;
+}
+.canvas{
+    position: relative;
+    width:800px;
+    height:800px;
+    background-color:grey;
+}
