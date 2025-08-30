@@ -66,6 +66,7 @@ class player{
     constructor(){
         this.node=document.createElement("div");
         this.node.setAttribute("class", "player sprite");
+        const nodeSize=parseInt(window.getComputedStyle(this.node).getPropertyValue("height").slice(0,-2));
         canvas.appendChild(this.node);
 
         this.move=(event)=>{
@@ -75,13 +76,13 @@ class player{
                     this.node.style.top=`${Math.max(0, position[1]-14)}px`;
                     break
                 case "s":
-                    this.node.style.top=`${Math.min(screenSize, position[1]+14)}px`;
+                    this.node.style.top=`${Math.min(screenSize-nodeSize, position[1]+14)}px`;
                     break
                 case "a":
                     this.node.style.left=`${Math.max(0, position[0]-14)}px`;
                     break
                 case "d":
-                    this.node.style.left=`${Math.min(screenSize, position[0]+14)}px`;
+                    this.node.style.left=`${Math.min(screenSize-nodeSize, position[0]+14)}px`;
                     break
             };
         };
@@ -120,21 +121,21 @@ class enemy{
 
         this.shoot=(target)=>{
             if (Date.now()-this.lastShot>=this.shootCooldown){
-                new bullet(getPosition(target.node),this.node,game);
+                new bullet(getPosition(target.node),this);
                 this.lastShot=Date.now()
             };
         };
     };
 
-    static enemyHandler(game){
-        for (let i=0;i<game.enemies.length;i++){
-            game.enemies[i].move(game.player);
-            game.enemies[i].shoot(game.player);
-            for (let j=0;j<=game.enemies.length;j++){
+    static enemyHandler(){
+        for (let i=0;i<play.enemies.length;i++){
+            play.enemies[i].move(play.player);
+            play.enemies[i].shoot(play.player);
+            for (let j=0;j<play.enemies.length;j++){
                 if (j==i) continue;
-                if (detectCollision(game.enemies[i].node, game.enemies[j].node)){
-                    const enemyPosition=getPosition(game.enemies[i]);
-                    const otherEnemyPosition=getPosition(game.enemies[j]);
+                if (detectCollision(play.enemies[i].node, play.enemies[j].node)){
+                    const enemyPosition=getPosition(play.enemies[i].node);
+                    const otherEnemyPosition=getPosition(play.enemies[j].node);
                     let x=0;
                     let y=0;
                     if (enemyPosition[0]>otherEnemyPosition[0]){
@@ -149,15 +150,15 @@ class enemy{
                     else if (enemyPosition[1]<otherEnemyPosition[1]){
                         y=-1;
                     };
-                    game.enemies[i].style.left=`${enemyPosition[0]+x}px`;
-                    game.enemies[i].style.top=`${enemyPosition[1]+y}px`;
+                    play.enemies[i].node.style.left=`${enemyPosition[0]+x}px`;
+                    play.enemies[i].node.style.top=`${enemyPosition[1]+y}px`;
                 };
             };
-            if (detectCollision(game.enemies[i].node, game.player.node)){
-                game.alive=false;
+            if (detectCollision(play.enemies[i].node, play.player.node)){
+                play.alive=false;
             };
-            if (detectCollision(game.enemies[i].node, game.laser.node1) || detectCollision(game.enemies[i].node, game.laser.node2)){
-                spawn("out", game.enemies[i])
+            if (play.laserbeam && (detectCollision(play.enemies[i].node, play.laserbeam.node1) || detectCollision(play.enemies[i].node, play.laserbeam.node2))){
+                spawn("out", play.enemies[i])
             };
         };
     };
@@ -173,11 +174,11 @@ class ammo{
 
     };
 
-    static ammoHandler=(game)=>{
-        for (let i=0;i<game.ammo.length;i++){
-            if (detectCollision(game.ammo[i].node, game.player.node)){
-                game.playerAmmo++;
-                spawn("in",game.ammo[i]);
+    static ammoHandler=()=>{
+        for (let i=0;i<play.munition.length;i++){
+            if (detectCollision(play.munition[i].node, play.player.node)){
+                play.playerAmmo++;
+                spawn("in",play.munition[i]);
             };
         };
     };
@@ -185,11 +186,11 @@ class ammo{
 
 class bullet{
 
-    constructor(endPosition, originObject, game){
+    constructor(endPosition, originObject){
         this.node=document.createElement("div");
         this.node.setAttribute("class", "bullet sprite");
         canvas.appendChild(this.node);
-        game.activeBullet.push(this);
+        play.activeBullet.push(this);
         this.shooter=originObject;
 
         this.position=getPosition(originObject.node);
@@ -204,24 +205,24 @@ class bullet{
         };
     };
 
-    static bulletHandler=(game)=>{
-        for (let i=0;i<game.activeBullet.length;i++){
-            for (let j=0;j<game.enemies.length;j++){
-                if (detectCollision(game.activeBullet[i], game.enemies[j])){
-                    if (game.activeBullet[i].originObject===game.player){
-                        game.killCount++;
-                        spawn("out", game.enemies[j]);
+    static bulletHandler=()=>{
+        for (let i=0;i<play.activeBullet.length;i++){
+            for (let j=0;j<play.enemies.length;j++){
+                if (detectCollision(play.activeBullet[i].node, play.enemies[j].node)){
+                    if (play.activeBullet[i].originObject===play.player){
+                        play.killCount++;
+                        spawn("out", play.enemies[j]);
                     };
                 };
             };
-            if (detectCollision(game.player, game.activeBullet[i])){
-                game.alive=false;
+            if (detectCollision(play.player.node, play.activeBullet[i].node)){
+                play.alive=false;
             };
-            for (let j=0;j<game.activeBullet.length;j++){
-                if (game.activeBullet[i]===game.activeBullet[j]) continue;
-                if (detectCollision(game.activeBullet[i], game.activeBullet[j])){
-                    game.activeBullet[i].remove();
-                    game.activeBullet[j].remove();
+            for (let j=0;j<play.activeBullet.length;j++){
+                if (play.activeBullet[i]===play.activeBullet[j]) continue;
+                if (detectCollision(play.activeBullet[i].node, play.activeBullet[j].node)){
+                    play.activeBullet[i].remove();
+                    play.activeBullet[j].remove();
                 };
             };
         };
@@ -289,15 +290,15 @@ class laser{
         };
     };
 
-    static laserHandler=(game)=>{
-        if (!game.laser && Date.now()-game.Lastlaser>=game.laserCooldown){
-            game.laser=new laser()
+    static laserHandler=()=>{
+        if (!play.laserbeam && Date.now()-play.Lastlaser>=play.laserCooldown){
+            play.laserbeam=new laser()
         }
-        else if (this.laser){
-            game.laser.move()
+        else if (play.laserbeam){
+            play.laserbeam.move()
         };
-        if (game.laser && (detectCollision(game.player.node, game.laser.node1) || detectCollision(game.player.node, game.laser.node2))){
-            game.alive=false;
+        if (play.laserbeam && (detectCollision(play.player.node, play.laserbeam.node1) || detectCollision(play.player.node, play.laserbeam.node2))){
+            play.alive=false;
         };
     };
 };
@@ -313,41 +314,41 @@ class game{
         this.player= new player();
         this.playerAmmo=7;
         this.playerCooldown=250;
+        this.activeBullet=[];
+        this.enemies=[];
+        this.munition=[];
+        this.laserbeam=false;
+        this.laserCooldown=10000;
+        this.Lastlaser=Date.now()
         this.lastShot=Date.now();
         document.addEventListener("keydown", this.player.move);
         canvas.addEventListener("click", (event)=>{
             if (this.playerAmmo && Date.now()-this.lastShot>=250){ new
-                bullet([event.clientX, event.clientY], this.node, game)};
+                bullet([event.clientX, event.clientY], this.player)};
                 this.playerAmmo--
         });
-        this.enemies=[];
-        this.ammo=[];
         for (let i=6;i>=0;i--){
-            const enemy=new enemy();
-            spawn("out", enemy.node);
-            this.enemies.push(enemy);
+            const enem=new enemy();
+            spawn("out", enem.node);
+            console.log(enem.node.style.left, enem.node.style.top);
+
+            this.enemies.push(enem);
         };
         for (let i=5;i>=0;i--){
-            const ammo=new ammo();
-            spawn("in", ammo.node);
-            this.ammo.push(ammo);
+            const amm=new ammo();
+            spawn("in", amm.node);
+            this.munition.push(amm);
         };
-        this.activeBullet=[];
-        this.laser=false;
-        this.laserCooldown=10000;
-        this.Lastlaser=Date.now()
     }
 
     update(){
-        laser.laserHandler;
-        enemy.enemyHandler;
-        ammo.ammoHandler;
-        bullet.bulletHandler;
+        laser.laserHandler();
+        enemy.enemyHandler();
+        ammo.ammoHandler();
+        bullet.bulletHandler();
     };
-
-    run(){
-        
-    }
 };
 
-const game=new game();
+const play=new game();
+play.initialize();
+play.update();
