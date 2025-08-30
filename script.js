@@ -3,9 +3,9 @@ const canvas=document.querySelector(".canvas");
 const screenSize=800;
 
 function getPosition(node){
-    let x=node.style.left;
-    let y=node.style.top;
-    return [parseInt(x.slice(0,-2)), parseInt(y.slice(0, -2))];
+    let x=parseInt(node.style.left.slice(0,-2)) || 1;
+    let y=parseInt(node.style.top.slice(0,-2)) || 1;
+    return [x, y];
 }
 
 function spawn(insetOutset, node){
@@ -158,7 +158,7 @@ class enemy{
                 play.alive=false;
             };
             if (play.laserbeam && (detectCollision(play.enemies[i].node, play.laserbeam.node1) || detectCollision(play.enemies[i].node, play.laserbeam.node2))){
-                spawn("out", play.enemies[i])
+                spawn("out", play.enemies[i].node)
             };
         };
     };
@@ -178,7 +178,7 @@ class ammo{
         for (let i=0;i<play.munition.length;i++){
             if (detectCollision(play.munition[i].node, play.player.node)){
                 play.playerAmmo++;
-                spawn("in",play.munition[i]);
+                spawn("in",play.munition[i].node);
             };
         };
     };
@@ -211,7 +211,7 @@ class bullet{
                 if (detectCollision(play.activeBullet[i].node, play.enemies[j].node)){
                     if (play.activeBullet[i].originObject===play.player){
                         play.killCount++;
-                        spawn("out", play.enemies[j]);
+                        spawn("out", play.enemies[j].node);
                     };
                 };
             };

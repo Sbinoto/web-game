@@ -5,7 +5,7 @@
 }
 
 .canvas{
-    position:relative;
+    position:fixed;
     width: 800px;
     height: 800px;
     background-color: dimgray;
