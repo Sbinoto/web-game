@@ -39,3 +39,9 @@
         box-shadow: 0px 0px 30px 3px white;
     }
 }
+
+.laser{
+    position: absolute;
+    background-color: red;
+    box-shadow: ;
+}
