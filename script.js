@@ -192,16 +192,17 @@ class bullet{
         canvas.appendChild(this.node);
         play.activeBullet.push(this);
         this.shooter=originObject;
-
         this.position=getPosition(originObject.node);
-        this.distance=Math.hypot(this.position[0], this.position[1]);
+        this.node.style.left=`${this.position[0]}px`;
+        this.node.style.top=`${this.position[1]}px`;
+        this.distance=Math.hypot(endPosition[0]-this.position[0], endPosition[1]-this.position[1]);
         this.xRate=Math.floor((endPosition[0]-this.position[0])/this.distance*10);
         this.yrate=Math.floor((endPosition[1]-this.position[1])/this.distance*10);
 
         this.move=()=>{
             const currentPosition=getPosition(this.node);
             this.node.style.left=`${currentPosition[0]+this.xRate}px`;
-            this.node.style.top=`${currentPosition[1]+this.xRate}px`;
+            this.node.style.top=`${currentPosition[1]+this.yRate}px`;
         };
     };
 
@@ -221,6 +222,8 @@ class bullet{
             for (let j=0;j<play.activeBullet.length;j++){
                 if (play.activeBullet[i]===play.activeBullet[j]) continue;
                 if (detectCollision(play.activeBullet[i].node, play.activeBullet[j].node)){
+                    play.activeBullet.splice(i,1);
+                    play.activeBullet.splice(j,1);
                     play.activeBullet[i].remove();
                     play.activeBullet[j].remove();
                 };
