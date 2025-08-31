@@ -8,8 +8,12 @@ function getPosition(node){
     return [x, y];
 }
 
+function getSize(node){
+    return parseInt(window.getComputedStyle(node).getPropertyValue("height").slice(0,-2))
+};
+
 function spawn(insetOutset, node){
-    const nodeSize=parseInt(window.getComputedStyle(node).getPropertyValue("height").slice(0,-2));
+    const nodeSize=getSize(node);
     let x;
     let y;
     switch (insetOutset){
@@ -47,9 +51,9 @@ function spawn(insetOutset, node){
 
 function detectCollision(node1, node2){
     const node1Position=getPosition(node1);
-    const node1Size=parseInt(window.getComputedStyle(node1).getPropertyValue("width").slice(0,-2));
+    const node1Size=getSize(node1);
     const node2Position=getPosition(node2);
-    const node2Size=parseInt(window.getComputedStyle(node2).getPropertyValue("width").slice(0,-2));
+    const node2Size=getSize(node2);
     if ((node1Position[0]>node2Position[0] && node1Position[0]<node2Position[0]+node2Size) ||
          (node1Position[0]+node2Size>node2Position[0] && node1Position[0]+node1Size<node2Position[0]+node2Size) ||
          (node1Position[1]>node2Position[1] && node1Position[1]<node2Position[1]+node2Size) ||
@@ -66,7 +70,7 @@ class player{
     constructor(){
         this.node=document.createElement("div");
         this.node.setAttribute("class", "player sprite");
-        const nodeSize=parseInt(window.getComputedStyle(this.node).getPropertyValue("height").slice(0,-2));
+        const nodeSize=getsize(this.node);
         canvas.appendChild(this.node);
 
         this.move=(event)=>{
@@ -324,7 +328,7 @@ class game{
         this.laserCooldown=10000;
         this.Lastlaser=Date.now()
         this.lastShot=Date.now();
-        document.addEventListener("keydown", this.player.move);
+        document.addEventListener("keydown", (event)=>{this.player.move(event)});
         canvas.addEventListener("click", (event)=>{
             if (this.playerAmmo && Date.now()-this.lastShot>=250){ new
                 bullet([event.clientX, event.clientY], this.player)};
