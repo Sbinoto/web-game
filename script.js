@@ -3,13 +3,13 @@ const canvas=document.querySelector(".canvas");
 const screenSize=800;
 
 function getPosition(node){
-    let x=parseInt(node.style.left.slice(0,-2)) || 1;
-    let y=parseInt(node.style.top.slice(0,-2)) || 1;
+    let x=parseInt(getComputedStyle(node).getPropertyValue("left").slice(0,-2)) || 0;
+    let y=parseInt(getComputedStyle(node).getPropertyValue("top").slice(0,-2)) || 0;
     return [x, y];
 }
 
 function getSize(node){
-    return parseInt(window.getComputedStyle(node).getPropertyValue("height").slice(0,-2))
+    return parseInt(window.getComputedStyle(node).getPropertyValue("height").slice(0,-2));
 };
 
 function spawn(insetOutset, node){
@@ -70,8 +70,8 @@ class player{
     constructor(){
         this.node=document.createElement("div");
         this.node.setAttribute("class", "player sprite");
-        const nodeSize=getsize(this.node);
         canvas.appendChild(this.node);
+        const nodeSize=getSize(this.node);
 
         this.move=(event)=>{
             const position=getPosition(this.node);
@@ -89,8 +89,8 @@ class player{
                     this.node.style.left=`${Math.min(screenSize-nodeSize, position[0]+14)}px`;
                     break
             };
+};
         };
-    };
 };
 
 class enemy{
