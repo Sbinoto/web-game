@@ -161,7 +161,8 @@ class enemy{
             if (detectCollision(play.enemies[i].node, play.player.node)){
                 play.alive=false;
             };
-            if (play.laserbeam && (detectCollision(play.enemies[i].node, play.laserbeam.node1) || detectCollision(play.enemies[i].node, play.laserbeam.node2))){
+            if (play.laserbeam && (detectCollision(play.enemies[i].node, play.laserbeam.node1) ||
+             detectCollision(play.enemies[i].node, play.laserbeam.node2))){
                 spawn("out", play.enemies[i].node)
             };
         };
@@ -214,12 +215,14 @@ class bullet{
     static bulletHandler=()=>{
         for (let i=0;i<play.activeBullet.length;i++){
             for (let j=0;j<play.enemies.length;j++){
-                if (detectCollision(play.activeBullet[i].node, play.enemies[j].node) && play.activeBullet[i].shooter===play.player){
+                if (detectCollision(play.activeBullet[i].node, play.enemies[j].node) &&
+                 play.activeBullet[i].shooter===play.player){
                     play.killCount++;
                     spawn("out", play.enemies[j].node);
                 };
             };
-            if (detectCollision(play.player.node, play.activeBullet[i].node) && play.activeBullet[i].shooter!==play.player){
+            if (detectCollision(play.player.node, play.activeBullet[i].node) &&
+             play.activeBullet[i].shooter!==play.player){
                 play.alive=false;
             };
             for (let j=0;j<play.activeBullet.length;j++){
@@ -303,7 +306,8 @@ class laser{
         else if (play.laserbeam){
             play.laserbeam.move()
         };
-        if (play.laserbeam && (detectCollision(play.player.node, play.laserbeam.node1) || detectCollision(play.player.node, play.laserbeam.node2))){
+        if (play.laserbeam && (detectCollision(play.player.node, play.laserbeam.node1) ||
+         detectCollision(play.player.node, play.laserbeam.node2))){
             play.alive=false;
         };
     };
@@ -325,6 +329,7 @@ class game{
     };
 
     initialize(){
+        deathScreen.style.visibility="hidden"
         this.wasd=[false,false,false,false]
         this.alive=true;
         this.score=0;
@@ -355,26 +360,43 @@ class game{
     };
 
     inputHandler(event){
-        switch (event.key){
-            case "w":
-                this.wasd[0]=!this.wasd[0];
-                break
-            case "a":
-                this.wasd[1]=!this.wasd[1];
-                break
-            case "s":
-                this.wasd[2]=!this.wasd[2];
-                break
-            case "d":
-                this.wasd[3]=!this.wasd[3];
-                break
-            case " ":
-                if (event.type=="keydown"){
-                    this.running=!this.running;
-                    if (!this.alive){
-                        this.initialize();
+        switch (event.type){
+            case "keydown":
+                switch (event.key){
+                    case "w":
+                        this.wasd[0]=true;
                         break
-                    };
+                    case "a":
+                        this.wasd[1]=true;
+                        break
+                    case "s":
+                        this.wasd[2]=true;
+                        break
+                    case "d":
+                        this.wasd[3]=true;
+                        break
+                    case " ":
+                        this.running=!this.running;
+                        if (!this.alive){
+                            this.initialize();
+                            break
+                        };
+                };
+                break
+            case "keyup":
+                switch (event.key){
+                case "w":
+                    this.wasd[0]=false;
+                    break
+                case "a":
+                    this.wasd[1]=false;
+                    break
+                case "s":
+                    this.wasd[2]=false;
+                    break
+                case "d":
+                    this.wasd[3]=false;
+                    break
                 };
         };
     };
@@ -392,14 +414,14 @@ class game{
     mainLoop(){
         while (this.alive){
             if (this.running){
-            startScreen.style.setAttribute("visibility", "hidden")
+            startScreen.style.visibility="hidden";
             this.update;
             continue
             };
-            startScreen.style.setAttribute("visibility", "visible");
+            startScreen.style.visibility="visible";
         };
         this.running=false;
-        deathScreen.style.setAttribute("visibility", "visible")
+        deathScreen.style.visibility="visible";
     }
 };
 
