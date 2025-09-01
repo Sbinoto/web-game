@@ -1,6 +1,8 @@
 const canvas=document.querySelector(".canvas");
-
 const screenSize=800;
+ 
+const deathScreen=document.querySelector(".deathScreen");
+const startScreen=document.querySelector(".startScreen");
 
 function getPosition(node){
     let x=parseInt(getComputedStyle(node).getPropertyValue("left").slice(0,-2)) || 0;
@@ -73,24 +75,22 @@ class player{
         canvas.appendChild(this.node);
         const nodeSize=getSize(this.node);
 
-        this.move=(event)=>{
+        this.move=(wasdArray)=>{
             const position=getPosition(this.node);
-            switch (event.key){
-                case "w":
-                    this.node.style.top=`${Math.max(0, position[1]-14)}px`;
-                    break
-                case "s":
-                    this.node.style.top=`${Math.min(screenSize-nodeSize, position[1]+14)}px`;
-                    break
-                case "a":
-                    this.node.style.left=`${Math.max(0, position[0]-14)}px`;
-                    break
-                case "d":
-                    this.node.style.left=`${Math.min(screenSize-nodeSize, position[0]+14)}px`;
-                    break
+            if (wasdArray[0]){
+                this.node.style.top=`${Math.max(0, position[1]-14)}px`;
             };
-};
+            if (wasdArray[1]){
+                this.node.style.left=`${Math.max(0, position[0]-14)}px`;
+            };
+            if (wasdArray[2]){
+                this.node.style.top=`${Math.min(screenSize-nodeSize, position[1]+14)}px`;
+            };
+            if (wasdArray[3]){
+                this.node.style.left=`${Math.min(screenSize-nodeSize, position[0]+14)}px`;
+            };
         };
+    };
 };
 
 class enemy{
@@ -196,12 +196,13 @@ class bullet{
         canvas.appendChild(this.node);
         play.activeBullet.push(this);
         this.shooter=originObject;
+        this.shooterCenter=getSize(originObject)/2
         this.position=getPosition(originObject.node);
-        this.node.style.left=`${this.position[0]}px`;
-        this.node.style.top=`${this.position[1]}px`;
+        this.node.style.left=`${this.position[0]+this.shooterCenter}px`;
+        this.node.style.top=`${this.position[1]+this.shooterCenter}px`;
         this.distance=Math.hypot(endPosition[0]-this.position[0], endPosition[1]-this.position[1]);
         this.xRate=Math.floor((endPosition[0]-this.position[0])/this.distance*10);
-        this.yrate=Math.floor((endPosition[1]-this.position[1])/this.distance*10);
+        this.yRate=Math.floor((endPosition[1]-this.position[1])/this.distance*10);
 
         this.move=()=>{
             const currentPosition=getPosition(this.node);
@@ -213,14 +214,12 @@ class bullet{
     static bulletHandler=()=>{
         for (let i=0;i<play.activeBullet.length;i++){
             for (let j=0;j<play.enemies.length;j++){
-                if (detectCollision(play.activeBullet[i].node, play.enemies[j].node)){
-                    if (play.activeBullet[i].originObject===play.player){
-                        play.killCount++;
-                        spawn("out", play.enemies[j].node);
-                    };
+                if (detectCollision(play.activeBullet[i].node, play.enemies[j].node) && play.activeBullet[i].shooter===play.player){
+                    play.killCount++;
+                    spawn("out", play.enemies[j].node);
                 };
             };
-            if (detectCollision(play.player.node, play.activeBullet[i].node)){
+            if (detectCollision(play.player.node, play.activeBullet[i].node) && play.activeBullet[i].shooter!==play.player){
                 play.alive=false;
             };
             for (let j=0;j<play.activeBullet.length;j++){
@@ -313,11 +312,24 @@ class laser{
 class game{
 
     constructor(){
-        this.alive=true;
-        this.killCount=0;
+        this.running=false;
+        this.initialize();
+        document.addEventListener("keydown", (event)=>{this.inputHandler(event)});
+        document.addEventListener("keyup", (event)=>this.inputHandler(event))
+        canvas.addEventListener("click", (event)=>{
+            if (this.playerAmmo && Date.now()-this.lastShot>=250){ new
+                bullet([event.clientX, event.clientY], this.player)};
+                this.playerAmmo--
+        });
+        this.mainLoop()
     };
 
     initialize(){
+        this.wasd=[false,false,false,false]
+        this.alive=true;
+        this.score=0;
+        this.killCount=0;
+        this.timer-Date.now();
         this.player= new player();
         this.playerAmmo=7;
         this.playerCooldown=250;
@@ -328,12 +340,6 @@ class game{
         this.laserCooldown=10000;
         this.Lastlaser=Date.now()
         this.lastShot=Date.now();
-        document.addEventListener("keydown", (event)=>{this.player.move(event)});
-        canvas.addEventListener("click", (event)=>{
-            if (this.playerAmmo && Date.now()-this.lastShot>=250){ new
-                bullet([event.clientX, event.clientY], this.player)};
-                this.playerAmmo--
-        });
         for (let i=6;i>=0;i--){
             const enem=new enemy();
             spawn("out", enem.node);
@@ -346,16 +352,55 @@ class game{
             spawn("in", amm.node);
             this.munition.push(amm);
         };
-    }
+    };
+
+    inputHandler(event){
+        switch (event.key){
+            case "w":
+                this.wasd[0]=!this.wasd[0];
+                break
+            case "a":
+                this.wasd[1]=!this.wasd[1];
+                break
+            case "s":
+                this.wasd[2]=!this.wasd[2];
+                break
+            case "d":
+                this.wasd[3]=!this.wasd[3];
+                break
+            case " ":
+                if (event.type=="keydown"){
+                    this.running=!this.running;
+                    if (!this.alive){
+                        this.initialize();
+                        break
+                    };
+                };
+        };
+    };
 
     update(){
+        this.player.move(this.wasd)
         laser.laserHandler();
         enemy.enemyHandler();
         ammo.ammoHandler();
         bullet.bulletHandler();
+        this.score+=Date.now()-this.timer;
+        this.timer=Date.now();
     };
+
+    mainLoop(){
+        while (this.alive){
+            if (this.running){
+            startScreen.style.setAttribute("visibility", "hidden")
+            this.update;
+            continue
+            };
+            startScreen.style.setAttribute("visibility", "visible");
+        };
+        this.running=false;
+        deathScreen.style.setAttribute("visibility", "visible")
+    }
 };
 
 const play=new game();
-play.initialize();
-play.update();

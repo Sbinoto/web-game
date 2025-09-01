@@ -45,3 +45,25 @@
     background-color: red;
     box-shadow: 0px 0px 30px 3px red;
 }
+
+.deathScreen{
+    visibility: hidden;
+    display:flex;
+    position:fixed;
+    width:800px;
+    height:800px;
+    background-color: black;
+
+    &+h1{
+        color:darkred
+    }
+}
+
+.startScreen{
+    visibility: hidden;
+    text-align: center;
+    width:800px;
+    height:800px;
+    opacity: 50%;
+    background-color: black;
+}
