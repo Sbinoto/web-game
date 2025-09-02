@@ -56,15 +56,15 @@ function detectCollision(node1, node2){
     const node1Size=getSize(node1);
     const node2Position=getPosition(node2);
     const node2Size=getSize(node2);
-    if ((node1Position[0]>node2Position[0] && node1Position[0]<node2Position[0]+node2Size) ||
-         (node1Position[0]+node2Size>node2Position[0] && node1Position[0]+node1Size<node2Position[0]+node2Size) ||
-         (node1Position[1]>node2Position[1] && node1Position[1]<node2Position[1]+node2Size) ||
-         (node1Position[1]+node2Size>node2Position[1] && node1Position[1]+node1Size<node2Position[1]+node2Size)){
-        return true
-    }
-    else{
-        return false
-    };
+    const verticalCollision=(node1Position[0]>node2Position[0] && node1Position[0]<node2Position[0]+node2Size) ||
+                            (node1Position[0]<node2Position[0] && node1Position[0]+node1Size>node2Position[0]) ||
+                            (node1Position[0]>node2Position[0] && node1Position[0]+node1Size<node2Position[0]+node2Size) ||
+                            (node1Position[0]<node2Position[0] && node1Position[0]+node1Size>node2Position[0]+node2Size);
+    const horizontalCollision=(node1Position[1]>node2Position[1] && node1Position[1]<node2Position[1]+node2Size) ||
+                            (node1Position[1]<node2Position[1] && node1Position[1]+node1Size>node2Position[1]) ||
+                            (node1Position[1]>node2Position[1] && node1Position[1]+node1Size<node2Position[1]+node2Size) ||
+                            (node1Position[1]<node2Position[1] && node1Position[1]+node1Size>node2Position[1]+node2Size);
+    return verticalCollision && horizontalCollision;
 };
 
 class player{
@@ -160,6 +160,7 @@ class enemy{
             };
             if (detectCollision(play.enemies[i].node, play.player.node)){
                 play.alive=false;
+                console.log("enem")
             };
             if (play.laserbeam && (detectCollision(play.enemies[i].node, play.laserbeam.node1) ||
              detectCollision(play.enemies[i].node, play.laserbeam.node2))){
@@ -197,7 +198,7 @@ class bullet{
         canvas.appendChild(this.node);
         play.activeBullet.push(this);
         this.shooter=originObject;
-        this.shooterCenter=getSize(originObject)/2
+        this.shooterCenter=getSize(originObject.node)/2
         this.position=getPosition(originObject.node);
         this.node.style.left=`${this.position[0]+this.shooterCenter}px`;
         this.node.style.top=`${this.position[1]+this.shooterCenter}px`;
@@ -224,14 +225,15 @@ class bullet{
             if (detectCollision(play.player.node, play.activeBullet[i].node) &&
              play.activeBullet[i].shooter!==play.player){
                 play.alive=false;
+                console.log("bullet")
             };
             for (let j=0;j<play.activeBullet.length;j++){
                 if (play.activeBullet[i]===play.activeBullet[j]) continue;
                 if (detectCollision(play.activeBullet[i].node, play.activeBullet[j].node)){
+                    play.activeBullet[i].node.remove();
+                    play.activeBullet[j].node.remove();
                     play.activeBullet.splice(i,1);
                     play.activeBullet.splice(j,1);
-                    play.activeBullet[i].remove();
-                    play.activeBullet[j].remove();
                 };
             };
         };
@@ -309,6 +311,7 @@ class laser{
         if (play.laserbeam && (detectCollision(play.player.node, play.laserbeam.node1) ||
          detectCollision(play.player.node, play.laserbeam.node2))){
             play.alive=false;
+            console.log("laser")
         };
     };
 };
@@ -316,25 +319,33 @@ class laser{
 class game{
 
     constructor(){
+        this.record={
+            kill:0,
+            time:0
+        };
         this.running=false;
         this.initialize();
         document.addEventListener("keydown", (event)=>{this.inputHandler(event)});
         document.addEventListener("keyup", (event)=>this.inputHandler(event))
         canvas.addEventListener("click", (event)=>{
             if (this.playerAmmo && Date.now()-this.lastShot>=250){ new
-                bullet([event.clientX, event.clientY], this.player)};
-                this.playerAmmo--
+                bullet([event.clientX, event.clientY], this.player);
+                this.playerAmmo--;
+            };
         });
-        this.mainLoop()
+        requestAnimationFrame((time)=>this.mainLoop(time));
     };
 
     initialize(){
+        this.startTime=undefined;
         deathScreen.style.visibility="hidden"
+        while (canvas.lastChild!=startScreen){
+            canvas.removeChild(canvas.lastChild)
+        };
         this.wasd=[false,false,false,false]
         this.alive=true;
-        this.score=0;
+        this.timer=0;
         this.killCount=0;
-        this.timer-Date.now();
         this.player= new player();
         this.playerAmmo=7;
         this.playerCooldown=250;
@@ -376,6 +387,11 @@ class game{
                         this.wasd[3]=true;
                         break
                     case " ":
+                        if (!this.running){
+                            startScreen.style.visibility="hidden"
+                        } else{
+                            startScreen.style.visibility="visible"
+                        };
                         this.running=!this.running;
                         if (!this.alive){
                             this.initialize();
@@ -407,22 +423,36 @@ class game{
         enemy.enemyHandler();
         ammo.ammoHandler();
         bullet.bulletHandler();
-        this.score+=Date.now()-this.timer;
-        this.timer=Date.now();
+        this.timer+=1/30;
     };
 
-    mainLoop(){
-        while (this.alive){
-            if (this.running){
-            startScreen.style.visibility="hidden";
-            this.update;
-            continue
-            };
-            startScreen.style.visibility="visible";
+    playerDead(){
+        if (this.record.kill<this.killCount){
+            this.record.kill=this.killCount
         };
-        this.running=false;
+        if (this.record.time<this.timer){
+            this.record.time=this.timer;
+        };
         deathScreen.style.visibility="visible";
+    };
+
+    mainLoop(currentTime){
+        if (this.startTime===undefined){
+            this.startTime=currentTime;
+        };
+        if (currentTime-this.startTime>1000/30){
+            this.startTime=currentTime
+            if (this.alive){
+                if (this.running){
+                    this.update();
+                };
+            } else {
+                this.playerDead();
+            };
+        };
+        requestAnimationFrame((time)=>this.mainLoop(time));
     }
 };
 
 const play=new game();
+

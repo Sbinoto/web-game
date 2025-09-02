@@ -11,32 +11,31 @@
     background-color: dimgray;
 }
 
-.player, .enemy{
-    position: absolute;
-    height: 60px;
-    width: 60px;
-    background-color: white;
-}
-
 .sprite{
     position: absolute;
     height: 60px;
     width: 60px;
     &.player{
-    background-color: white;
+        background-color: white;
+        z-index: 4;
+        left:400px;
+        top:400px;
     }
     &.enemy{
-    background-color: black;
+        background-color: black;
+        z-index: 4;
     }
     &.ammo, &.bullet{
         height: 15px;
         width: 15px;
         background-color: orange;
+        z-index: 2;
     }
     &.bullet{
         background-color: darkgray;
         border-radius: 50%;
         box-shadow: 0px 0px 30px 3px white;
+        z-index: 3;
     }
 }
 
@@ -44,6 +43,7 @@
     position: absolute;
     background-color: red;
     box-shadow: 0px 0px 30px 3px red;
+    z-index: 5;
 }
 
 .deathScreen{
@@ -53,6 +53,7 @@
     width:800px;
     height:800px;
     background-color: black;
+    z-index: 6;
 
     &+h1{
         color:darkred
@@ -60,10 +61,11 @@
 }
 
 .startScreen{
-    visibility: hidden;
+    visibility: visible;
     text-align: center;
     width:800px;
     height:800px;
     opacity: 50%;
     background-color: black;
+    z-index: 6;
 }
