@@ -2,32 +2,56 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    color:white;
+    font-size: 64px;
 }
+
+.main{
+    background-color: black;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.stats{
+    width:800px;
+    border: 8px solid white;
+    display: flex;
+    flex-direction: column;
+}
+
+.info{
+    width:800px;
+}
+
 
 .canvas{
     position:fixed;
     width: 800px;
     height: 800px;
     background-color: dimgray;
+    outline: 16px solid white;
 }
 
 .sprite{
     position: absolute;
-    height: 60px;
-    width: 60px;
+    height: 40px;
+    width: 40px;
     &.player{
         background-color: white;
         z-index: 4;
-        left:400px;
-        top:400px;
+        left:360px;
+        top:360px;
     }
     &.enemy{
         background-color: black;
         z-index: 4;
     }
     &.ammo, &.bullet{
-        height: 15px;
-        width: 15px;
+        height: 10px;
+        width: 10px;
         background-color: orange;
         z-index: 2;
     }

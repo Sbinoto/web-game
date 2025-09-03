@@ -77,16 +77,16 @@ class player{
         this.move=(wasdArray)=>{
             const position=getPosition(this.node);
             if (wasdArray[0]){
-                this.node.style.top=`${Math.max(0, position[1]-14)}px`;
+                this.node.style.top=`${Math.max(0, position[1]-16)}px`;
             };
             if (wasdArray[1]){
-                this.node.style.left=`${Math.max(0, position[0]-14)}px`;
+                this.node.style.left=`${Math.max(0, position[0]-16)}px`;
             };
             if (wasdArray[2]){
-                this.node.style.top=`${Math.min(screenSize-nodeSize, position[1]+14)}px`;
+                this.node.style.top=`${Math.min(screenSize-nodeSize, position[1]+16)}px`;
             };
             if (wasdArray[3]){
-                this.node.style.left=`${Math.min(screenSize-nodeSize, position[0]+14)}px`;
+                this.node.style.left=`${Math.min(screenSize-nodeSize, position[0]+16)}px`;
             };
         };
     };
@@ -107,16 +107,16 @@ class enemy{
             let x=0;
             let y=0;
             if (currentPosition[0]>targetPosition[0]){
-                x-=7;
+                x-=4;
             }
             else{
-                x+=7
+                x+=4;
             };
             if (currentPosition[1]>targetPosition[1]){
-                y-=7
+                y-=4;
             }
             else{
-                y+=7
+                y+=4;
             }
             this.node.style.left=`${currentPosition[0]+x}px`;
             this.node.style.top=`${currentPosition[1]+y}px`;
@@ -159,7 +159,6 @@ class enemy{
             };
             if (detectCollision(play.enemies[i].node, play.player.node)){
                 play.alive=false;
-                console.log("enem")
             };
             if (play.laserbeam && (detectCollision(play.enemies[i].node, play.laserbeam.node1) ||
              detectCollision(play.enemies[i].node, play.laserbeam.node2))){
@@ -202,8 +201,8 @@ class bullet{
         this.node.style.left=`${this.position[0]+this.shooterCenter}px`;
         this.node.style.top=`${this.position[1]+this.shooterCenter}px`;
         this.distance=Math.hypot(endPosition[0]-this.position[0], endPosition[1]-this.position[1]);
-        this.xRate=Math.floor((endPosition[0]-this.position[0])/this.distance*10);
-        this.yRate=Math.floor((endPosition[1]-this.position[1])/this.distance*10);
+        this.xRate=(endPosition[0]-this.position[0])/this.distance*10;
+        this.yRate=(endPosition[1]-this.position[1])/this.distance*10;
 
         this.move=()=>{
             const currentPosition=getPosition(this.node);
@@ -221,19 +220,23 @@ class bullet{
                     spawn("out", play.enemies[j].node);
                 };
             };
+            play.activeBullet[i].move()
             if (detectCollision(play.player.node, play.activeBullet[i].node) &&
              play.activeBullet[i].shooter!==play.player){
                 play.alive=false;
-                console.log("bullet")
             };
+            let toRemove;
             for (let j=0;j<play.activeBullet.length;j++){
                 if (play.activeBullet[i]===play.activeBullet[j]) continue;
                 if (detectCollision(play.activeBullet[i].node, play.activeBullet[j].node)){
-                    play.activeBullet[i].node.remove();
-                    play.activeBullet[j].node.remove();
-                    play.activeBullet.splice(i,1);
-                    play.activeBullet.splice(j,1);
+                    toRemove=j
                 };
+            };
+            if (toRemove){
+                play.activeBullet[i].node.remove();
+                play.activeBullet[toRemove].node.remove();
+                play.activeBullet.splice(i,1);
+                play.activeBullet.splice(toRemove,1);
             };
         };
     };
@@ -243,6 +246,7 @@ class laser{
 
     constructor(){
         this.type=Math.floor(Math.random()*3);
+        console.log(this.type)
         this.node1=document.createElement("div");
         this.node2=document.createElement("div");
         this.node1.setAttribute("class", "laser");
@@ -267,6 +271,8 @@ class laser{
                 this.node1.style.left="-800px";
                 this.node2.style.left="800px";
         };
+        canvas.appendChild(this.node1);
+        canvas.appendChild(this.node2);
 
         this.move=()=>{
             let x=0;
@@ -301,16 +307,17 @@ class laser{
     };
 
     static laserHandler=()=>{
-        if (!play.laserbeam && Date.now()-play.Lastlaser>=play.laserCooldown){
+        if (!play.laserbeam && Date.now()-play.Lastlaser>=play.Lastlaser){
             play.laserbeam=new laser()
         }
         else if (play.laserbeam){
-            play.laserbeam.move()
+            if (play.laserbeam.move()==false){
+                play.laserbeam=false
+            }
         };
         if (play.laserbeam && (detectCollision(play.player.node, play.laserbeam.node1) ||
          detectCollision(play.player.node, play.laserbeam.node2))){
             play.alive=false;
-            console.log("laser")
         };
     };
 };
@@ -355,11 +362,9 @@ class game{
         this.laserCooldown=10000;
         this.Lastlaser=Date.now()
         this.lastShot=Date.now();
-        for (let i=6;i>=0;i--){
+        for (let i=4;i>=0;i--){
             const enem=new enemy();
             spawn("out", enem.node);
-            console.log(enem.node.style.left, enem.node.style.top);
-
             this.enemies.push(enem);
         };
         for (let i=5;i>=0;i--){

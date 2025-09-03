@@ -8,12 +8,33 @@
     <script src="./script.js" defer></script>
 </head>
 <body>
-    <div class="canvas">
-        <div class="deathScreen">
-            <h1 >You died</h1>
-            <h2 class="stats"></h2>
+    <div class="main">
+        <div class="stats">
+            <div class="currentStats">
+                <h1 class="inventory">AMMO==></h1>
+                <h1 class="current score">SCORE==></h1>
+                <h1 class="current kills">KILLS==></h1>
+            </div>
+            <div class="records">
+                <h1>PERSONAL BEST</h1>
+                <h1 class="best score">SCORE==></h1>
+                <h1 class="best kills">KILLS==></h1>
+            </div>
         </div>
-        <div class="startScreen">Press Space to Start</div>
+        <div class="canvas">
+            <div class="deathScreen">
+                <h1 >You died</h1>
+                <h2 class="gameStats"></h2>
+            </div>
+            <div class="startScreen">Press Space to Start</div>
+        </div>
+        <div class="info">
+            <h1 class="instructions">
+                <p>Move with WASD, aim with mouse and left click to shoot. Get the gold rectangles to
+                    get more ammo. Dodge the black and red rectangles.
+                </p>
+            </h1>
+        </div>
     </div>
 </body>
 </html>
