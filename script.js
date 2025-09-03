@@ -45,10 +45,9 @@ function spawn(insetOutset, node){
                     y+=screenSize-nodeSize;
                     break
             };
-            node.style.left=`${x}px`;
-            node.style.top=`${y}px`;
-
-    };
+        };
+    node.style.left=`${x}px`;
+    node.style.top=`${y}px`;
 };
 
 function detectCollision(node1, node2){
