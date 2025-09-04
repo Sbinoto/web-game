@@ -1,3 +1,6 @@
+body{
+    overflow: hidden;
+}
 *{
     box-sizing: border-box;
     margin: 0;
@@ -15,15 +18,49 @@
 
 }
 
-.stats{
+.filler{
+    position: relative;
+    height:8px;
     width:800px;
+    background-color: white;
+    z-index: 6;
+}
+
+.display{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.healthBar{
+    position: relative;
+    width:800px;
+    background-color: black;
+    border-top: 8px white solid;
+    height:calc(100vh - 800px - 8px);
+    z-index: 6;
+}
+
+.stats{
+    position: relative;
+    z-index: 6;
+    width:800px;
+    height: 100vh;
+    background-color: black;
     border: 8px solid white;
     display: flex;
     flex-direction: column;
 }
 
 .info{
+    background-color: black;
     width:800px;
+    height: 100vh;
+    text-wrap: pretty;
+    border: 8px solid white;
+    display: flex;
+    flex-direction: column;
+    z-index: 6;
 }
 
 
@@ -32,7 +69,6 @@
     width: 800px;
     height: 800px;
     background-color: dimgray;
-    outline: 16px solid white;
 }
 
 .sprite{
@@ -73,10 +109,13 @@
 .deathScreen{
     visibility: hidden;
     display:flex;
+    flex-direction: column;
     position:fixed;
     width:800px;
     height:800px;
     background-color: black;
+    align-items: center;
+    justify-content: center;
     z-index: 6;
 
     &+h1{
