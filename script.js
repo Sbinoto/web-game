@@ -68,11 +68,14 @@ function detectCollision(node1, node2){
 
 function isInbound(node){
     const position=getPosition(node);
-    if (position[0]<0 || position[1]<0){
+    const nodeSize=getSize(node);
+    if (position[0]<0-nodeSize || position[1]<0-nodeSize ||
+         position[0]>screenSize+nodeSize || position[1]>screenSize+nodeSize){
         node.style.visibility="hidden";
         return false
     } else{
-        node.style.visibility="visible"
+        node.style.visibility="visible";
+        return true
     };
 };
 
@@ -237,6 +240,7 @@ class bullet{
                  play.activeBullet[i].shooter===play.player){
                     play.killCount++;
                     spawn("out", play.enemies[j].node);
+                    toRemove.push(i);
                 };
             };
             if (detectCollision(play.player.node, play.activeBullet[i].node) &&
@@ -246,16 +250,15 @@ class bullet{
             for (let j=0;j<play.activeBullet.length;j++){
                 if (play.activeBullet[i]===play.activeBullet[j]) continue;
                 if (detectCollision(play.activeBullet[i].node, play.activeBullet[j].node)){
+                    toRemove.push(i);
                     toRemove.push(j);
                 };
             };
         };
         if (toRemove.length>0){
-            for (const i of toRemove){
-                console.log(i)
-                console.log(play.activeBullet)
-                play.activeBullet[i].node.remove();
-                play.activeBullet.splice(i, 1);
+            for (let i=toRemove.length-1;i>=0;i--){
+                play.activeBullet[toRemove[i]].node.remove();
+                play.activeBullet.splice(toRemove[i], 1);
             };
         };  
     };
