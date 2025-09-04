@@ -287,6 +287,8 @@ class laser{
                 break
             case 1:
                 this.node1.style.left="-800px";
+                this.node1.style.top="0px"
+                this.node2.style.top="0px"
                 this.node2.style.left="800px";
                 break
             case 2:
@@ -303,19 +305,19 @@ class laser{
             let position2=getPosition(this.node2);
             switch (this.type){
                 case 0:
-                    if (position1[1]+7>screenSize/3){
+                    if (position1[1]+7>-350){
                         return false
                     };
                     y=7
                     break
                 case 1:
-                    if (position1[0]+7>screenSize/3){
+                    if (position1[0]+7>-350){
                         return false
                     };
                     x=7
                     break
                 case 2:
-                    if (position1[1]+7>screenSize/2){
+                    if (position1[1]+7>-screenSize/2){
                         return false
                     };
                     x=7
@@ -329,11 +331,13 @@ class laser{
     };
 
     static laserHandler=()=>{
-        if (!play.laserbeam && Date.now()-play.Lastlaser>=play.Lastlaser){
+        if (!play.laserbeam){
             play.laserbeam=new laser()
         }
         else if (play.laserbeam){
             if (play.laserbeam.move()==false){
+                play.laserbeam.node1.remove();
+                play.laserbeam.node2.remove();
                 play.laserbeam=false
             }
         };
