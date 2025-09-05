@@ -20,6 +20,9 @@ body{
 }
 
 table{
+    position: relative;
+    z-index: 6;
+    height:100vh;
     width:800px;
     border:8px solid white;
     border-collapse: collapse;
@@ -28,10 +31,21 @@ table{
 th{
     background-color: white;
     color:black;
+    font-size: 64px;
 }
 
 .skull, .clock{
     height:128px;
+}
+
+.imgTh{
+    width:128px;
+}
+
+td{
+    background-color: black;
+    text-align: center;
+    font-size: 64px;
 }
 
 .filler{

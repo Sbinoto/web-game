@@ -3,10 +3,12 @@ const screenSize=800;
  
 const deathScreen=document.querySelector(".deathScreen");
 const startScreen=document.querySelector(".startScreen");
-const currentScore=document.querySelector(".current .score");
-const currentKillCount=document.querySelector(".current .kills");
-const recordScore=document.querySelector(".best .score");
-const recordKillCount=document.querySelector(".best .kills");
+const currentScore=document.querySelector(".current.score");
+const currentKillCount=document.querySelector(".current.kills");
+const recordScore=document.querySelector(".best.score");
+const recordKillCount=document.querySelector(".best.kills");
+const hearts=Array.from(document.querySelectorAll(".heartIMG"));
+const playerAmmo=document.querySelector(".playerAmmo");
 
 
 
@@ -86,7 +88,9 @@ function isInbound(node){
 };
 
 function UIHandler(){
-
+    playerAmmo.textContent=play.playerAmmo;
+    currentScore.textContent=Math.floor(play.timer);
+    currentKillCount.textContent=play.killCount;
 
 }
 
@@ -102,7 +106,7 @@ class player{
 
         this.damage=()=>{
             if (this.invincibilityPeriod<=0){
-                this.health--;
+                hearts[--this.health].style.visibility="hidden";
                 this.invincibilityPeriod=2000;
             };
         };
@@ -249,10 +253,10 @@ class bullet{
     };
 
     static bulletHandler=()=>{
-        let toRemove=[];
+        let toRemove=new Set()
         for (let i=0;i<play.activeBullet.length;i++){
             if (!isInbound(play.activeBullet[i].node)){
-                toRemove.push(i)
+                toRemove.add(i);
             };
             play.activeBullet[i].move();
             for (let j=0;j<play.enemies.length;j++){
@@ -260,22 +264,25 @@ class bullet{
                  play.activeBullet[i].shooter===play.player){
                     play.killCount++;
                     spawn("out", play.enemies[j].node);
-                    toRemove.push(i);
+                    toRemove.add(i);
+;
                 };
             };
             if (detectCollision(play.player.node, play.activeBullet[i].node) &&
              play.activeBullet[i].shooter!==play.player){
                 play.player.damage()
+                toRemove.add(i);;
             };
             for (let j=0;j<play.activeBullet.length;j++){
                 if (play.activeBullet[i]===play.activeBullet[j]) continue;
                 if (detectCollision(play.activeBullet[i].node, play.activeBullet[j].node)){
-                    toRemove.push(i);
-                    toRemove.push(j);
+                    toRemove.add(i);
+                    toRemove.add(j);
                 };
             };
         };
-        if (toRemove.length>0){
+        if (toRemove.size>0){
+            toRemove=Array.from(toRemove).sort((a,b)=>a-b);
             for (let i=toRemove.length-1;i>=0;i--){
                 play.activeBullet[toRemove[i]].node.remove();
                 play.activeBullet.splice(toRemove[i], 1);
@@ -420,6 +427,9 @@ class game{
             spawn("in", amm.node);
             this.munition.push(amm);
         };
+        for (const heart of hearts){
+            heart.style.visibility="visible";
+        };
     };
 
     inputHandler(event){
@@ -479,6 +489,7 @@ class game{
         ammo.ammoHandler();
         bullet.bulletHandler();
         this.timer+=1/30;
+        UIHandler();
     };
 
     playerDead(){
@@ -489,6 +500,8 @@ class game{
             this.record.time=this.timer;
         };
         deathScreen.style.visibility="visible";
+        recordScore.textContent=Math.floor(play.record.time);
+        recordKillCount.textContent=Math.floor(play.record.kill);
     };
 
     mainLoop(currentTime){
