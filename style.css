@@ -19,6 +19,21 @@ body{
 
 }
 
+table{
+    width:800px;
+    border:8px solid white;
+    border-collapse: collapse;
+}
+
+th{
+    background-color: white;
+    color:black;
+}
+
+.skull, .clock{
+    height:128px;
+}
+
 .filler{
     position: relative;
     height:8px;
@@ -64,40 +79,6 @@ body{
 
 .munition{
     padding: 0 8px;
-}
-
-.stats{
-    font-size: 48px;
-    position: relative;
-    z-index: 6;
-    width:800px;
-    height: 100vh;
-    background-color: black;
-    border: 8px solid white;
-    display: flex;
-    flex-direction: column;
-
-    & .kills::before{
-        position:relative;
-        top:30px;
-        content: "";
-        display: inline-block;
-        background-size: 128px 128px;
-        background-image: url("./assets/pixelart_skull.png");
-        height:128px;
-        width:128px;
-    }
-
-    & .score::before{
-        position:relative;
-        top:30px;
-        content: "";
-        display: inline-block;
-        background-size: 128px 128px;
-        background-image: url("./assets/clock.png");
-        height:128px;
-        width:128px;
-    }
 }
 
 .info{
