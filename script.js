@@ -3,6 +3,12 @@ const screenSize=800;
  
 const deathScreen=document.querySelector(".deathScreen");
 const startScreen=document.querySelector(".startScreen");
+const currentScore=document.querySelector(".current .score");
+const currentKillCount=document.querySelector(".current .kills");
+const recordScore=document.querySelector(".best .score");
+const recordKillCount=document.querySelector(".best .kills");
+
+
 
 function getPosition(node){
     let x=parseInt(getComputedStyle(node).getPropertyValue("left").slice(0,-2)) || 0;
@@ -78,6 +84,11 @@ function isInbound(node){
         return true
     };
 };
+
+function UIHandler(){
+
+
+}
 
 class player{
 

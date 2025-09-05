@@ -6,13 +6,9 @@ body{
     margin: 0;
     padding: 0;
     color:white;
-    font-size: 48px;
 }
 
-img{
-    display: inline-block;
-    height: 100%;
-}
+
 
 .main{
     background-color: black;
@@ -40,17 +36,38 @@ img{
 .HUD{
     position: relative;
     width:800px;
-    background-color: black;
+    background-color: white;
     border-top: 8px white solid;
     height:calc(100vh - 800px - 8px);
     z-index: 6;    
-    & .inv{
-        border: 2px solid white;
-        height: 50%;
+    display: flex;
+}
+
+.health, .munition{
+    height:100%;
+    width:50%;
+    border: 4px solid black;
+    display: flex;
+
+    & .heartIMG{
+        width:33%;
+    }
+
+    & .playerAmmo{
+        flex-grow: 2;
+        text-align: center;
+        font-size: 128px;
+        display:inline-block;
+        color:black;
     }
 }
 
+.munition{
+    padding: 0 8px;
+}
+
 .stats{
+    font-size: 48px;
     position: relative;
     z-index: 6;
     width:800px;
@@ -59,6 +76,28 @@ img{
     border: 8px solid white;
     display: flex;
     flex-direction: column;
+
+    & .kills::before{
+        position:relative;
+        top:30px;
+        content: "";
+        display: inline-block;
+        background-size: 128px 128px;
+        background-image: url("./assets/pixelart_skull.png");
+        height:128px;
+        width:128px;
+    }
+
+    & .score::before{
+        position:relative;
+        top:30px;
+        content: "";
+        display: inline-block;
+        background-size: 128px 128px;
+        background-image: url("./assets/clock.png");
+        height:128px;
+        width:128px;
+    }
 }
 
 .info{
@@ -86,7 +125,7 @@ img{
     width: 40px;
     &.player{
         background-color: white;
-        z-index: 4;
+        z-index: 6;
         left:360px;
         top:360px;
     }
@@ -122,14 +161,10 @@ img{
     position:fixed;
     width:800px;
     height:800px;
-    background-color: black;
+    background-color: black; 
     align-items: center;
     justify-content: center;
     z-index: 6;
-
-    &+h1{
-        color:darkred
-    }
 }
 
 .startScreen{
