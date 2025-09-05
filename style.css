@@ -6,7 +6,12 @@ body{
     margin: 0;
     padding: 0;
     color:white;
-    font-size: 64px;
+    font-size: 48px;
+}
+
+img{
+    display: inline-block;
+    height: 100%;
 }
 
 .main{
@@ -32,13 +37,17 @@ body{
     height: 100vh;
 }
 
-.healthBar{
+.HUD{
     position: relative;
     width:800px;
     background-color: black;
     border-top: 8px white solid;
     height:calc(100vh - 800px - 8px);
-    z-index: 6;
+    z-index: 6;    
+    & .inv{
+        border: 2px solid white;
+        height: 50%;
+    }
 }
 
 .stats{
