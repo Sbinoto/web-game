@@ -5,3 +5,7 @@
 https://opengameart.org/content/pixel-art-skull
 
 <a href="https://www.flaticon.com/free-icons/pixels" title="pixels icons">Pixels icons created by cubydesign - Flaticon</a>
+
+https://www.youtube.com/@Classical8Bit
+This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.
+https://www.youtube.com/@Bulby

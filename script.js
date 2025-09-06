@@ -9,6 +9,11 @@ const recordScore=document.querySelector(".best.score");
 const recordKillCount=document.querySelector(".best.kills");
 const hearts=Array.from(document.querySelectorAll(".heartIMG"));
 const playerAmmo=document.querySelector(".playerAmmo");
+const songTitle=document.querySelector(".title");
+const songCredit=document.querySelector(".names");
+const songExtras=document.querySelector(".extras");
+
+
 
 
 
@@ -87,12 +92,27 @@ function isInbound(node){
     };
 };
 
-function UIHandler(){
-    playerAmmo.textContent=play.playerAmmo;
-    currentScore.textContent=Math.floor(play.timer);
-    currentKillCount.textContent=play.killCount;
+class music{
 
-}
+    constructor(title, url, names, extra){
+        this.title=title;
+        this.url=url;
+        this.names=names;
+        this.extra=extra
+    };
+};
+
+const carmen= new music("Carmen", "./assets/music/carmen.mp3", ["Georges Bizet", "Classical 8 Bit"]
+    , "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.")
+const canCan= new music("Can-Can", "./assets/music/cancan.mp3", ["Jacques Offenbach", "Bulby"]
+    , "https://www.youtube.com/@Bulby")
+const mountainKing= new music("In the Hall of the Mountain King", "./assets/music/mountainking.mp3", ["Edvard Grieg", "Classical 8 Bit"], "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.")
+const rideOfTheValkyries= new music("Ride of the Valkyries", "./assets/music/rideofthevalkyries.mp3", ["Richard Wagner", "Classical 8 Bit"]
+    , "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.")
+const williamTell= new music("William Tell Overture", "./assets/music/williamtell.mp3", ["Gioachino Rossini", "Classical 8 Bit"]
+    , "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.")
+
+let track=[carmen,canCan,mountainKing,rideOfTheValkyries,williamTell];
 
 class player{
 
@@ -295,7 +315,6 @@ class laser{
 
     constructor(){
         this.type=Math.floor(Math.random()*3);
-        console.log(this.type)
         this.node1=document.createElement("div");
         this.node2=document.createElement("div");
         canvas.appendChild(this.node1);
@@ -392,13 +411,13 @@ class game{
                 const canvasInfo=canvas.getBoundingClientRect();
                 new bullet([event.clientX-canvasInfo.x, event.clientY-canvasInfo.y], this.player);
                 this.playerAmmo--;
-                console.log(event.clientX, event.clientY)
             };
         });
         requestAnimationFrame((time)=>this.mainLoop(time));
     };
 
     initialize(){
+        this.song=false;
         this.startTime=undefined;
         deathScreen.style.visibility="hidden"
         while (canvas.lastChild!=startScreen){
@@ -479,6 +498,23 @@ class game{
         };
     };
 
+    UIHandler(){
+        playerAmmo.textContent=play.playerAmmo;
+        currentScore.textContent=Math.floor(play.timer);
+        currentKillCount.textContent=play.killCount;
+    };
+
+    musicHandler(){
+        if (!this.song){
+            const song=track[Math.floor(Math.random()*5)];
+            songTitle.textContent=song.title;
+            songCredit.textContent=song.names;
+            songExtras.textContent=song.extra;
+            this.song=new Audio(song.url);
+            this.song.play();
+        };
+    };
+
     update(){
         this.player.move(this.wasd)
         if (this.player.invincibilityPeriod){
@@ -489,7 +525,8 @@ class game{
         ammo.ammoHandler();
         bullet.bulletHandler();
         this.timer+=1/30;
-        UIHandler();
+        this.musicHandler();
+        this.UIHandler();
     };
 
     playerDead(){
@@ -502,6 +539,10 @@ class game{
         deathScreen.style.visibility="visible";
         recordScore.textContent=Math.floor(play.record.time);
         recordKillCount.textContent=Math.floor(play.record.kill);
+        if (this.song){
+            this.song.pause();
+            this.song=false;
+        };
     };
 
     mainLoop(currentTime){
@@ -511,7 +552,6 @@ class game{
         if (currentTime-this.startTime>1000/30){
             this.startTime=currentTime
             if (this.player.health>0){
-                console.log(this.player.health);
                 if (this.running){
                     this.update();
                 };
