@@ -13,9 +13,20 @@ const songTitle=document.querySelector(".title");
 const songCredit=document.querySelector(".names");
 const songExtras=document.querySelector(".extras");
 
-
-
-
+function animationToggle(onOff){
+    const sprites=Array.from(document.querySelectorAll(".sprite"));
+    switch (onOff){
+        case "on":
+            for (const node of sprites){
+                node.style.animationPlayState="running"
+            };
+            break
+        case "off":
+            for (const node of sprites){
+                node.style.animationPlayState="paused"
+            };
+    };
+};
 
 function getPosition(node){
     let x=parseInt(getComputedStyle(node).getPropertyValue("left").slice(0,-2)) || 0;
@@ -134,16 +145,16 @@ class player{
         this.move=(wasdArray)=>{
             const position=getPosition(this.node);
             if (wasdArray[0]){
-                this.node.style.top=`${Math.max(0, position[1]-16)}px`;
+                this.node.style.top=`${Math.max(0, position[1]-10)}px`;
             };
             if (wasdArray[1]){
-                this.node.style.left=`${Math.max(0, position[0]-16)}px`;
+                this.node.style.left=`${Math.max(0, position[0]-10)}px`;
             };
             if (wasdArray[2]){
-                this.node.style.top=`${Math.min(screenSize-nodeSize, position[1]+16)}px`;
+                this.node.style.top=`${Math.min(screenSize-nodeSize, position[1]+10)}px`;
             };
             if (wasdArray[3]){
-                this.node.style.left=`${Math.min(screenSize-nodeSize, position[0]+16)}px`;
+                this.node.style.left=`${Math.min(screenSize-nodeSize, position[0]+10)}px`;
             };
         };
     };
@@ -164,16 +175,16 @@ class enemy{
             let x=0;
             let y=0;
             if (currentPosition[0]>targetPosition[0]){
-                x-=6;
+                x-=4;
             }
             else{
-                x+=6;
+                x+=4;
             };
             if (currentPosition[1]>targetPosition[1]){
-                y-=6;
+                y-=4;
             }
             else{
-                y+=6;
+                y+=4;
             }
             this.node.style.left=`${currentPosition[0]+x}px`;
             this.node.style.top=`${currentPosition[1]+y}px`;
@@ -262,8 +273,8 @@ class bullet{
         this.node.style.left=`${this.position[0]}px`;
         this.node.style.top=`${this.position[1]}px`;
         this.distance=Math.hypot(endPosition[0]-this.position[0], endPosition[1]-this.position[1]);
-        this.xRate=(endPosition[0]-this.position[0])/this.distance*18;
-        this.yRate=(endPosition[1]-this.position[1])/this.distance*18;
+        this.xRate=(endPosition[0]-this.position[0])/this.distance*14;
+        this.yRate=(endPosition[1]-this.position[1])/this.distance*14;
 
         this.move=()=>{
             const currentPosition=getPosition(this.node);
@@ -354,20 +365,20 @@ class laser{
                     if (position1[1]+7>-500){
                         return false
                     };
-                    y=14;
+                    y=9;
                     break
                 case 1:
                     if (position1[0]+7>-500){
                         return false
                     };
-                    x=14;
+                    x=9;
                     break
                 case 2:
                     if (position1[1]+7>-200){
                         return false
                     };
-                    x=14;
-                    y=14;
+                    x=9;
+                    y=9;
             };
             this.node1.style.left=`${position1[0]+x}px`;
             this.node1.style.top=`${position1[1]+y}px`;
@@ -469,9 +480,17 @@ class game{
                         break
                     case " ":
                         if (!this.running){
-                            startScreen.style.visibility="hidden"
+                            startScreen.style.visibility="hidden";
+                            if (this.song){
+                            this.song.play();
+                            };
+                            animationToggle("on");
                         } else{
-                            startScreen.style.visibility="visible"
+                            startScreen.style.visibility="visible";
+                            if (this.song){
+                            this.song.pause();
+                            };
+                            animationToggle("off")
                         };
                         this.running=!this.running;
                         if (this.player.health<=0){
@@ -543,6 +562,7 @@ class game{
             this.song.pause();
             this.song=false;
         };
+        animationToggle("off");
     };
 
     mainLoop(currentTime){

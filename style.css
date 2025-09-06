@@ -7,6 +7,10 @@
     font-display: swap;
 }
 
+@keyframes rotate {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+}
 
 
 body{
@@ -126,16 +130,19 @@ td{
 }
 
 .title{
+    padding:8px;
     background-color: white;
     font-size: 64px;
     color:black;
     height:148px;
 }
 .names{
+    padding:8px;
     font-size: 48px;
     height: 128px;
 }
 .extras{
+    padding:8px;
     background-color: white;
     font-size: 32px;
     color:black;
@@ -162,6 +169,11 @@ td{
     position: absolute;
     height: 40px;
     width: 40px;
+    transform: rotate(0deg);
+    animation-name: rotate;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-play-state: paused;
     &.player{
         background-color: white;
         z-index: 6;
